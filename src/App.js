@@ -6,11 +6,27 @@ import ProductList from "./ProductList";
 
 export default class App extends Component {
 
-  state={currentCategory: ""}
+  state={currentCategory: "", products:[] };
+
+  componentDidMount(){
+    this.getProducts();
+  }
 
   changeCategory = (category) => {
     this.setState({currentCategory:category.categoryName});
+    this.getProducts(category.id);
   };
+
+  getProducts = categoryId => {
+    let url = "http://localhost:3000/products";
+    if(categoryId) {
+      url += "?categoryId=" + categoryId;
+    }
+    fetch(url)
+    .then(response=>response.json())
+    .then(data=>this.setState({products:data}));
+  };
+
   render() {
     let categoryInfo = {title:"Category List"}
     let ProductInfo = {title:"Product List"}
@@ -25,7 +41,7 @@ export default class App extends Component {
               <CategoryList currentCategory={this.state.currentCategory} changeCategory={this.changeCategory} info={categoryInfo} />
             </Col>
             <Col xs="9">
-              <ProductList currentCategory={this.state.currentCategory} info={ProductInfo} />
+              <ProductList products={this.state.products} currentCategory={this.state.currentCategory} info={ProductInfo} />
             </Col>
           </Row>
         </Container>
